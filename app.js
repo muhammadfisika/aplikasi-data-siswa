@@ -1,298 +1,95 @@
-// ==========================================
+// ======================================
 // APLIKASI DATA SISWA
-// TAHAP 3
-// FIREBASE FIRESTORE
-// ==========================================
+// TAHAP 2
+// ======================================
 
 
-// ==========================================
-// FIREBASE SDK
-// ==========================================
-
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+// Ambil elemen form
+const formSiswa = document.getElementById("formSiswa");
 
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  query,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+// Ambil elemen pencarian
+const searchInput = document.getElementById("searchInput");
 
 
-// ==========================================
-// FIREBASE CONFIGURATION
-// GANTI DENGAN CONFIG MILIK ANDA
-// ==========================================
-
-import { initializeApp } from "firebase/app";
-const firebaseConfig = {
-  apiKey: "AIzaSyCttNZL1gypyuKfg_vigXo0qIkER3EYKt4",
-  authDomain: "aplikasi-data-siswa-d6055.firebaseapp.com",
-  projectId: "aplikasi-data-siswa-d6055",
-  storageBucket: "aplikasi-data-siswa-d6055.firebasestorage.app",
-  messagingSenderId: "174161734101",
-  appId: "1:174161734101:web:2e0073cd25a5a65fe0b55c"
-};
-const app = initializeApp(firebaseConfig);
-
-// ==========================================
-// INISIALISASI FIREBASE
-// ==========================================
-
-const app = initializeApp(firebaseConfig);
+// Ambil tabel siswa
+const tabelSiswa = document.getElementById("tabelSiswa");
 
 
-// ==========================================
-// INISIALISASI FIRESTORE
-// ==========================================
-
-const db = getFirestore(app);
-
-
-// ==========================================
-// REFERENSI COLLECTION
-// ==========================================
-
-const siswaCollection =
-  collection(db, "siswa");
-
-
-// ==========================================
-// ELEMEN HTML
-// ==========================================
-
-const formSiswa =
-  document.getElementById("formSiswa");
-
-const searchInput =
-  document.getElementById("searchInput");
-
-const tabelSiswa =
-  document.getElementById("tabelSiswa");
-
-
-// ==========================================
-// VARIABEL DATA
-// ==========================================
+// Data sementara untuk latihan
+// Pada tahap berikutnya data ini akan diganti
+// dengan data dari Firebase Firestore.
 
 let dataSiswa = [];
 
 
-// ==========================================
-// LOAD DATA SAAT APLIKASI DIBUKA
-// ==========================================
+// ======================================
+// SIMPAN DATA
+// ======================================
 
-window.addEventListener(
-  "DOMContentLoaded",
-  function() {
+formSiswa.addEventListener("submit", function(event) {
 
-    tampilkanDataSiswa();
+  event.preventDefault();
 
-  }
-);
 
+  // Ambil nilai form
 
-// ==========================================
-// TAMBAH DATA SISWA
-// ==========================================
+  const nisn =
+    document.getElementById("nisn").value.trim();
 
-formSiswa.addEventListener(
-  "submit",
-  async function(event) {
+  const nama =
+    document.getElementById("nama").value.trim();
 
-    event.preventDefault();
+  const kelas =
+    document.getElementById("kelas").value;
 
 
-    const nisn =
-      document
-        .getElementById("nisn")
-        .value
-        .trim();
+  // Validasi
 
+  if (!nisn || !nama || !kelas) {
 
-    const nama =
-      document
-        .getElementById("nama")
-        .value
-        .trim();
+    alert("Semua data harus diisi.");
 
-
-    const kelas =
-      document
-        .getElementById("kelas")
-        .value;
-
-
-    // Validasi
-
-    if (!nisn || !nama || !kelas) {
-
-      alert(
-        "Semua data harus diisi."
-      );
-
-      return;
-    }
-
-
-    try {
-
-      // Simpan ke Firestore
-
-      await addDoc(
-        siswaCollection,
-        {
-
-          nisn: nisn,
-
-          nama: nama,
-
-          kelas: kelas,
-
-          createdAt:
-            new Date()
-
-        }
-      );
-
-
-      alert(
-        "Data siswa berhasil disimpan ke Firebase."
-      );
-
-
-      // Kosongkan form
-
-      formSiswa.reset();
-
-
-      // Ambil ulang data
-
-      await tampilkanDataSiswa();
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "Gagal menyimpan data: " +
-        error.message
-      );
-
-    }
-
-  }
-);
-
-
-// ==========================================
-// AMBIL DATA DARI FIRESTORE
-// ==========================================
-
-async function tampilkanDataSiswa() {
-
-  try {
-
-    tabelSiswa.innerHTML = `
-
-      <tr>
-
-        <td
-          colspan="5"
-          class="empty"
-        >
-          Memuat data...
-        </td>
-
-      </tr>
-
-    `;
-
-
-    // Query data siswa
-
-    const q = query(
-      siswaCollection,
-      orderBy("nama")
-    );
-
-
-    const snapshot =
-      await getDocs(q);
-
-
-    dataSiswa = [];
-
-
-    snapshot.forEach(
-      function(docSnapshot) {
-
-        const data =
-          docSnapshot.data();
-
-
-        dataSiswa.push({
-
-          id: docSnapshot.id,
-
-          nisn: data.nisn || "",
-
-          nama: data.nama || "",
-
-          kelas: data.kelas || ""
-
-        });
-
-      }
-    );
-
-
-    tampilkanTabel(dataSiswa);
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    tabelSiswa.innerHTML = `
-
-      <tr>
-
-        <td
-          colspan="5"
-          class="empty"
-        >
-          Gagal mengambil data.
-        </td>
-
-      </tr>
-
-    `;
-
-
-    alert(
-      "Gagal mengambil data Firebase: " +
-      error.message
-    );
-
+    return;
   }
 
-}
+
+  // Buat objek siswa
+
+  const siswa = {
+
+    nisn: nisn,
+    nama: nama,
+    kelas: kelas
+
+  };
 
 
-// ==========================================
-// TAMPILKAN DATA KE TABEL
-// ==========================================
+  // Masukkan ke array
 
-function tampilkanTabel(data) {
+  dataSiswa.push(siswa);
+
+
+  // Tampilkan data
+
+  tampilkanSiswa(dataSiswa);
+
+
+  // Kosongkan form
+
+  formSiswa.reset();
+
+
+  alert("Data siswa berhasil ditambahkan.");
+
+});
+
+
+// ======================================
+// TAMPILKAN DATA
+// ======================================
+
+function tampilkanSiswa(data) {
 
   tabelSiswa.innerHTML = "";
 
@@ -318,103 +115,74 @@ function tampilkanTabel(data) {
   }
 
 
-  data.forEach(
-    function(siswa, index) {
+  data.forEach(function(siswa, index) {
 
-      const row =
-        document.createElement("tr");
+    const row = document.createElement("tr");
 
 
-      row.innerHTML = `
+    row.innerHTML = `
 
-        <td>
-          ${index + 1}
-        </td>
+      <td>
+        ${index + 1}
+      </td>
 
-        <td>
-          ${escapeHTML(siswa.nisn)}
-        </td>
+      <td>
+        ${siswa.nisn}
+      </td>
 
-        <td>
-          ${escapeHTML(siswa.nama)}
-        </td>
+      <td>
+        ${siswa.nama}
+      </td>
 
-        <td>
-          ${escapeHTML(siswa.kelas)}
-        </td>
+      <td>
+        ${siswa.kelas}
+      </td>
 
-        <td>
+      <td>
+        <button
+          onclick="hapusSiswa(${index})"
+        >
+          Hapus
+        </button>
+      </td>
 
-          <button
-            onclick="hapusSiswa('${siswa.id}')"
-          >
-            Hapus
-          </button>
-
-        </td>
-
-      `;
+    `;
 
 
-      tabelSiswa.appendChild(row);
+    tabelSiswa.appendChild(row);
 
-    }
-  );
+  });
 
 }
 
 
-// ==========================================
+// ======================================
 // HAPUS DATA
-// ==========================================
+// ======================================
 
-window.hapusSiswa =
-  async function(id) {
+function hapusSiswa(index) {
 
-    const konfirmasi =
-      confirm(
-        "Apakah data siswa ini akan dihapus?"
-      );
+  const konfirmasi =
+    confirm("Hapus data siswa ini?");
 
 
-    if (!konfirmasi) {
+  if (!konfirmasi) {
 
-      return;
-    }
-
-
-    try {
-
-      await deleteDoc(
-        doc(db, "siswa", id)
-      );
+    return;
+  }
 
 
-      alert(
-        "Data berhasil dihapus."
-      );
+  dataSiswa.splice(index, 1);
 
 
-      await tampilkanDataSiswa();
+  tampilkanSiswa(dataSiswa);
+
+}
 
 
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "Gagal menghapus data: " +
-        error.message
-      );
-
-    }
-
-  };
-
-
-// ==========================================
+// ======================================
 // PENCARIAN
-// ==========================================
+// ======================================
 
 searchInput.addEventListener(
   "input",
@@ -427,171 +195,32 @@ searchInput.addEventListener(
 
 
     const hasil =
-      dataSiswa.filter(
-        function(siswa) {
+      dataSiswa.filter(function(siswa) {
 
-          return (
+        return (
 
-            siswa.nama
-              .toLowerCase()
-              .includes(keyword)
+          siswa.nama
+            .toLowerCase()
+            .includes(keyword)
 
-            ||
+          ||
 
-            siswa.nisn
-              .toLowerCase()
-              .includes(keyword)
+          siswa.nisn
+            .toLowerCase()
+            .includes(keyword)
 
-            ||
+          ||
 
-            siswa.kelas
-              .toLowerCase()
-              .includes(keyword)
+          siswa.kelas
+            .toLowerCase()
+            .includes(keyword)
 
-          );
+        );
 
-        }
-      );
+      });
 
 
-    tampilkanTabel(hasil);
+    tampilkanSiswa(hasil);
 
   }
 );
-
-
-// ==========================================
-// KEAMANAN TAMPILAN
-// ==========================================
-
-function escapeHTML(text) {
-
-  return String(text)
-
-    .replaceAll("&", "&amp;")
-
-    .replaceAll("<", "&lt;")
-
-    .replaceAll(">", "&gt;")
-
-    .replaceAll('"', "&quot;")
-
-    .replaceAll("'", "&#039;");
-
-}
-
-
-const CACHE_NAME = "data-siswa-v1";
-
-const FILES_TO_CACHE = [
-  "./",
-  "./index.html",
-  "./style.css",
-  "./app.js",
-  "./manifest.json"
-];
-
-
-self.addEventListener("install", function(event) {
-
-  event.waitUntil(
-
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-
-        return cache.addAll(
-          FILES_TO_CACHE
-        );
-
-      })
-
-  );
-
-});
-
-
-self.addEventListener("activate", function(event) {
-
-  event.waitUntil(
-
-    caches.keys()
-      .then(function(cacheNames) {
-
-        return Promise.all(
-
-          cacheNames.map(
-            function(cacheName) {
-
-              if (
-                cacheName !== CACHE_NAME
-              ) {
-
-                return caches.delete(
-                  cacheName
-                );
-
-              }
-
-            }
-          )
-
-        );
-
-      })
-
-  );
-
-});
-
-
-self.addEventListener("fetch", function(event) {
-
-  event.respondWith(
-
-    fetch(event.request)
-      .catch(function() {
-
-        return caches.match(
-          event.request
-        );
-
-      })
-
-  );
-
-});
-
-
-// ==========================================
-// SERVICE WORKER
-// ==========================================
-
-if ("serviceWorker" in navigator) {
-
-  window.addEventListener(
-    "load",
-    function() {
-
-      navigator.serviceWorker
-        .register("./service-worker.js")
-        .then(function(registration) {
-
-          console.log(
-            "Service Worker berhasil:",
-            registration.scope
-          );
-
-        })
-        .catch(function(error) {
-
-          console.error(
-            "Service Worker gagal:",
-            error
-          );
-
-        });
-
-    }
-  );
-
-}
