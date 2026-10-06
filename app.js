@@ -1,18 +1,14 @@
-// ==========================================
+
+// ======================================================
 // APLIKASI DATA SISWA
-// TAHAP 3
-// FIREBASE FIRESTORE
-// ==========================================
+// Firebase Firestore + GitHub Pages + PWA
+// ======================================================
 
+// ======================================================
+// 1. IMPORT FIREBASE
+// ======================================================
 
-// ==========================================
-// FIREBASE SDK
-// ==========================================
-
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
   getFirestore,
@@ -26,17 +22,21 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 
-// ==========================================
-// FIREBASE CONFIGURATION
-// GANTI DENGAN CONFIG MILIK ANDA
-// ==========================================
+// ======================================================
+// 2. KONFIGURASI FIREBASE
+// ======================================================
+//
+// GANTI bagian di bawah ini dengan konfigurasi Firebase
+// milik project Anda.
+//
+// Firebase Console
+// → Project Settings
+// → Your apps
+// → Web app
+// → SDK setup and configuration
+// → Config
+// ======================================================
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCttNZL1gypyuKfg_vigXo0qIkER3EYKt4",
   authDomain: "aplikasi-data-siswa-d6055.firebaseapp.com",
@@ -46,293 +46,151 @@ const firebaseConfig = {
   appId: "1:174161734101:web:2e0073cd25a5a65fe0b55c"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
 
-// ==========================================
-// INISIALISASI FIREBASE
-// ==========================================
+// ======================================================
+// 3. INISIALISASI FIREBASE
+// ======================================================
 
 const app = initializeApp(firebaseConfig);
-
-
-// ==========================================
-// INISIALISASI FIRESTORE
-// ==========================================
 
 const db = getFirestore(app);
 
 
-// ==========================================
-// REFERENSI COLLECTION
-// ==========================================
+// ======================================================
+// 4. REFERENSI COLLECTION FIRESTORE
+// ======================================================
 
-const siswaCollection =
-  collection(db, "siswa");
-
-
-// ==========================================
-// ELEMEN HTML
-// ==========================================
-
-const formSiswa =
-  document.getElementById("formSiswa");
-
-const searchInput =
-  document.getElementById("searchInput");
-
-const tabelSiswa =
-  document.getElementById("tabelSiswa");
+const siswaCollection = collection(db, "siswa");
 
 
-// ==========================================
-// VARIABEL DATA
-// ==========================================
+// ======================================================
+// 5. REFERENSI ELEMENT HTML
+// ======================================================
+
+const formSiswa = document.getElementById("formSiswa");
+
+const inputNisn = document.getElementById("nisn");
+
+const inputNama = document.getElementById("nama");
+
+const inputKelas = document.getElementById("kelas");
+
+const tabelSiswa = document.getElementById("tabelSiswa");
+
+const inputCari = document.getElementById("cari");
+
+
+// ======================================================
+// 6. VARIABEL DATA SISWA
+// ======================================================
 
 let dataSiswa = [];
 
 
-// ==========================================
-// LOAD DATA SAAT APLIKASI DIBUKA
-// ==========================================
+// ======================================================
+// 7. ESCAPE HTML
+// ======================================================
+// Mencegah karakter HTML masuk langsung ke tabel.
+// ======================================================
 
-window.addEventListener(
-  "DOMContentLoaded",
-  function() {
+function escapeHTML(value) {
 
-    tampilkanDataSiswa();
-
+  if (value === null || value === undefined) {
+    return "";
   }
-);
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 
-// ==========================================
-// TAMBAH DATA SISWA
-// ==========================================
-
-formSiswa.addEventListener(
-  "submit",
-  async function(event) {
-
-    event.preventDefault();
-
-
-    const nisn =
-      document
-        .getElementById("nisn")
-        .value
-        .trim();
-
-
-    const nama =
-      document
-        .getElementById("nama")
-        .value
-        .trim();
-
-
-    const kelas =
-      document
-        .getElementById("kelas")
-        .value;
-
-
-    // Validasi
-
-    if (!nisn || !nama || !kelas) {
-
-      alert(
-        "Semua data harus diisi."
-      );
-
-      return;
-    }
-
-
-    try {
-
-      // Simpan ke Firestore
-
-      await addDoc(
-        siswaCollection,
-        {
-
-          nisn: nisn,
-
-          nama: nama,
-
-          kelas: kelas,
-
-          createdAt:
-            new Date()
-
-        }
-      );
-
-
-      alert(
-        "Data siswa berhasil disimpan ke Firebase."
-      );
-
-
-      // Kosongkan form
-
-      formSiswa.reset();
-
-
-      // Ambil ulang data
-
-      await tampilkanDataSiswa();
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "Gagal menyimpan data: " +
-        error.message
-      );
-
-    }
-
-  }
-);
-
-
-// ==========================================
-// AMBIL DATA DARI FIRESTORE
-// ==========================================
+// ======================================================
+// 8. MEMUAT DATA DARI FIRESTORE
+// ======================================================
 
 async function tampilkanDataSiswa() {
 
   try {
 
     tabelSiswa.innerHTML = `
-
       <tr>
-
-        <td
-          colspan="5"
-          class="empty"
-        >
+        <td colspan="5" style="text-align:center;">
           Memuat data...
         </td>
-
       </tr>
-
     `;
-
-
-    // Query data siswa
 
     const q = query(
       siswaCollection,
       orderBy("nama")
     );
 
-
-    const snapshot =
-      await getDocs(q);
-
+    const snapshot = await getDocs(q);
 
     dataSiswa = [];
 
+    snapshot.forEach((docSnapshot) => {
 
-    snapshot.forEach(
-      function(docSnapshot) {
+      const data = docSnapshot.data();
 
-        const data =
-          docSnapshot.data();
+      dataSiswa.push({
+        id: docSnapshot.id,
+        nisn: data.nisn || "",
+        nama: data.nama || "",
+        kelas: data.kelas || ""
+      });
 
+    });
 
-        dataSiswa.push({
-
-          id: docSnapshot.id,
-
-          nisn: data.nisn || "",
-
-          nama: data.nama || "",
-
-          kelas: data.kelas || ""
-
-        });
-
-      }
-    );
-
-
-    tampilkanTabel(dataSiswa);
-
+    tampilkanKeTabel(dataSiswa);
 
   } catch (error) {
 
-    console.error(error);
+    console.error("Gagal mengambil data Firebase:", error);
 
     tabelSiswa.innerHTML = `
-
       <tr>
-
-        <td
-          colspan="5"
-          class="empty"
-        >
-          Gagal mengambil data.
+        <td colspan="5" style="text-align:center;color:red;">
+          Gagal mengambil data Firebase.
+          <br>
+          ${escapeHTML(error.message)}
         </td>
-
       </tr>
-
     `;
-
-
-    alert(
-      "Gagal mengambil data Firebase: " +
-      error.message
-    );
 
   }
 
 }
 
 
-// ==========================================
-// TAMPILKAN DATA KE TABEL
-// ==========================================
+// ======================================================
+// 9. MENAMPILKAN DATA KE TABEL
+// ======================================================
 
-function tampilkanTabel(data) {
+function tampilkanKeTabel(data) {
 
-  tabelSiswa.innerHTML = "";
-
-
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
 
     tabelSiswa.innerHTML = `
-
       <tr>
-
-        <td
-          colspan="5"
-          class="empty"
-        >
+        <td colspan="5" style="text-align:center;">
           Belum ada data siswa.
         </td>
-
       </tr>
-
     `;
 
     return;
   }
 
 
-  data.forEach(
-    function(siswa, index) {
+  tabelSiswa.innerHTML = data.map((siswa, index) => {
 
-      const row =
-        document.createElement("tr");
-
-
-      row.innerHTML = `
+    return `
+      <tr>
 
         <td>
           ${index + 1}
@@ -353,136 +211,289 @@ function tampilkanTabel(data) {
         <td>
 
           <button
-            onclick="hapusSiswa('${siswa.id}')"
-          >
+            type="button"
+            class="btn-hapus"
+            data-id="${escapeHTML(siswa.id)}">
+
             Hapus
+
           </button>
 
         </td>
 
-      `;
+      </tr>
+    `;
+
+  }).join("");
 
 
-      tabelSiswa.appendChild(row);
+  // Pasang event tombol hapus
+  document.querySelectorAll(".btn-hapus").forEach((button) => {
 
-    }
-  );
+    button.addEventListener("click", function() {
+
+      const id = this.getAttribute("data-id");
+
+      hapusSiswa(id);
+
+    });
+
+  });
 
 }
 
 
-// ==========================================
-// HAPUS DATA
-// ==========================================
+// ======================================================
+// 10. MENAMBAHKAN DATA SISWA
+// ======================================================
 
-window.hapusSiswa =
-  async function(id) {
+if (formSiswa) {
 
-    const konfirmasi =
-      confirm(
-        "Apakah data siswa ini akan dihapus?"
-      );
+  formSiswa.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
 
 
-    if (!konfirmasi) {
+    const nisn = inputNisn.value.trim();
+
+    const nama = inputNama.value.trim();
+
+    const kelas = inputKelas.value.trim();
+
+
+    // Validasi
+    if (!nisn || !nama || !kelas) {
+
+      alert("Semua data siswa harus diisi.");
 
       return;
+
     }
 
 
     try {
 
-      await deleteDoc(
-        doc(db, "siswa", id)
-      );
+      // Nonaktifkan tombol submit
+      const tombolSimpan =
+        formSiswa.querySelector('button[type="submit"]');
+
+      if (tombolSimpan) {
+        tombolSimpan.disabled = true;
+        tombolSimpan.textContent = "Menyimpan...";
+      }
 
 
-      alert(
-        "Data berhasil dihapus."
-      );
+      // Simpan ke Firestore
+      await addDoc(siswaCollection, {
+
+        nisn: nisn,
+
+        nama: nama,
+
+        kelas: kelas,
+
+        createdAt: new Date()
+
+      });
 
 
+      alert("Data siswa berhasil disimpan.");
+
+
+      // Kosongkan form
+      formSiswa.reset();
+
+
+      // Muat ulang data
       await tampilkanDataSiswa();
 
 
     } catch (error) {
 
-      console.error(error);
+      console.error("Gagal menyimpan data:", error);
 
       alert(
-        "Gagal menghapus data: " +
+        "Gagal menyimpan data Firebase:\n" +
         error.message
       );
 
+
+    } finally {
+
+      const tombolSimpan =
+        formSiswa.querySelector('button[type="submit"]');
+
+      if (tombolSimpan) {
+
+        tombolSimpan.disabled = false;
+
+        tombolSimpan.textContent = "Simpan";
+
+      }
+
     }
 
-  };
-
-
-// ==========================================
-// PENCARIAN
-// ==========================================
-
-searchInput.addEventListener(
-  "input",
-  function() {
-
-    const keyword =
-      searchInput.value
-        .toLowerCase()
-        .trim();
-
-
-    const hasil =
-      dataSiswa.filter(
-        function(siswa) {
-
-          return (
-
-            siswa.nama
-              .toLowerCase()
-              .includes(keyword)
-
-            ||
-
-            siswa.nisn
-              .toLowerCase()
-              .includes(keyword)
-
-            ||
-
-            siswa.kelas
-              .toLowerCase()
-              .includes(keyword)
-
-          );
-
-        }
-      );
-
-
-    tampilkanTabel(hasil);
-
-  }
-);
-
-
-// ==========================================
-// KEAMANAN TAMPILAN
-// ==========================================
-
-function escapeHTML(text) {
-
-  return String(text)
-
-    .replaceAll("&", "&amp;")
-
-    .replaceAll("<", "&lt;")
-
-    .replaceAll(">", "&gt;")
-
-    .replaceAll('"', "&quot;")
-
-    .replaceAll("'", "&#039;");
+  });
 
 }
+
+
+// ======================================================
+// 11. MENGHAPUS DATA SISWA
+// ======================================================
+
+async function hapusSiswa(id) {
+
+  if (!id) {
+
+    alert("ID data siswa tidak ditemukan.");
+
+    return;
+
+  }
+
+
+  const konfirmasi = confirm(
+    "Apakah Anda yakin ingin menghapus data siswa ini?"
+  );
+
+
+  if (!konfirmasi) {
+
+    return;
+
+  }
+
+
+  try {
+
+    await deleteDoc(
+      doc(db, "siswa", id)
+    );
+
+
+    alert("Data siswa berhasil dihapus.");
+
+
+    await tampilkanDataSiswa();
+
+
+  } catch (error) {
+
+    console.error("Gagal menghapus data:", error);
+
+    alert(
+      "Gagal menghapus data Firebase:\n" +
+      error.message
+    );
+
+  }
+
+}
+
+
+// ======================================================
+// 12. FITUR PENCARIAN
+// ======================================================
+
+if (inputCari) {
+
+  inputCari.addEventListener("input", function() {
+
+    const kataKunci =
+      this.value
+        .trim()
+        .toLowerCase();
+
+
+    if (!kataKunci) {
+
+      tampilkanKeTabel(dataSiswa);
+
+      return;
+
+    }
+
+
+    const hasil = dataSiswa.filter((siswa) => {
+
+      const nisn =
+        String(siswa.nisn || "").toLowerCase();
+
+      const nama =
+        String(siswa.nama || "").toLowerCase();
+
+      const kelas =
+        String(siswa.kelas || "").toLowerCase();
+
+
+      return (
+        nisn.includes(kataKunci) ||
+        nama.includes(kataKunci) ||
+        kelas.includes(kataKunci)
+      );
+
+    });
+
+
+    tampilkanKeTabel(hasil);
+
+  });
+
+}
+
+
+// ======================================================
+// 13. LOAD DATA SAAT APLIKASI DIBUKA
+// ======================================================
+
+tampilkanDataSiswa();
+
+
+// ======================================================
+// 14. SERVICE WORKER / PWA
+// ======================================================
+
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener("load", function() {
+
+    navigator.serviceWorker
+      .register("./service-worker.js")
+
+      .then(function(registration) {
+
+        console.log(
+          "Service Worker berhasil:",
+          registration.scope
+        );
+
+      })
+
+      .catch(function(error) {
+
+        console.error(
+          "Service Worker gagal:",
+          error
+        );
+
+      });
+
+  });
+
+}
+
+
+// ======================================================
+// 15. INFORMASI DEBUG
+// ======================================================
+
+console.log(
+  "Aplikasi Data Siswa berhasil dijalankan."
+);
+
+console.log(
+  "Firebase Project:",
+  firebaseConfig.projectId
+);
+```
