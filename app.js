@@ -31,7 +31,7 @@ import {
 // GANTI DENGAN CONFIG MILIK ANDA
 // ==========================================
 
-
+import { initializeApp } from "firebase/app";
 const firebaseConfig = {
   apiKey: "AIzaSyCttNZL1gypyuKfg_vigXo0qIkER3EYKt4",
   authDomain: "aplikasi-data-siswa-d6055.firebaseapp.com",
@@ -40,7 +40,7 @@ const firebaseConfig = {
   messagingSenderId: "174161734101",
   appId: "1:174161734101:web:2e0073cd25a5a65fe0b55c"
 };
-
+const app = initializeApp(firebaseConfig);
 
 // ==========================================
 // INISIALISASI FIREBASE
