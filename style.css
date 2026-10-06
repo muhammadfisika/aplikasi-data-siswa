@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f6fa;
+  color: #222;
+}
+
+
+/* HEADER */
+
+.header {
+  background: #1565c0;
+  color: white;
+  padding: 25px 15px;
+}
+
+.header h1 {
+  margin: 0 0 5px;
+}
+
+.header p {
+  margin: 0;
+}
+
+
+/* CONTAINER */
+
+.container {
+  width: 92%;
+  max-width: 1000px;
+  margin: auto;
+}
+
+
+/* CARD */
+
+.card {
+  background: white;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+
+/* FORM */
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.search-box input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  font-size: 15px;
+}
+
+
+/* BUTTON */
+
+.btn-primary {
+  background: #1565c0;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.btn-primary:hover {
+  background: #0d47a1;
+}
+
+
+/* SEARCH */
+
+.search-box {
+  margin-bottom: 15px;
+}
+
+
+/* TABLE */
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background: #e3f2fd;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+}
+
+
+/* FOOTER */
+
+footer {
+  margin-top: 30px;
+  padding: 20px;
+  text-align: center;
+  background: #1565c0;
+  color: white;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .container {
+    width: 95%;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  th,
+  td {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+}
