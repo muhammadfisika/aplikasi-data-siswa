@@ -31,21 +31,23 @@ import {
 // GANTI DENGAN CONFIG MILIK ANDA
 // ==========================================
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-
-  apiKey: "GANTI_DENGAN_API_KEY_ANDA",
-
-  authDomain: "GANTI_DENGAN_AUTH_DOMAIN_ANDA",
-
-  projectId: "GANTI_DENGAN_PROJECT_ID_ANDA",
-
-  storageBucket: "GANTI_DENGAN_STORAGE_BUCKET_ANDA",
-
-  messagingSenderId: "GANTI_DENGAN_MESSAGING_SENDER_ID_ANDA",
-
-  appId: "GANTI_DENGAN_APP_ID_ANDA"
-
+  apiKey: "AIzaSyCttNZL1gypyuKfg_vigXo0qIkER3EYKt4",
+  authDomain: "aplikasi-data-siswa-d6055.firebaseapp.com",
+  projectId: "aplikasi-data-siswa-d6055",
+  storageBucket: "aplikasi-data-siswa-d6055.firebasestorage.app",
+  messagingSenderId: "174161734101",
+  appId: "1:174161734101:web:2e0073cd25a5a65fe0b55c"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 
 // ==========================================
