@@ -560,3 +560,38 @@ self.addEventListener("fetch", function(event) {
   );
 
 });
+
+
+// ==========================================
+// SERVICE WORKER
+// ==========================================
+
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener(
+    "load",
+    function() {
+
+      navigator.serviceWorker
+        .register("./service-worker.js")
+        .then(function(registration) {
+
+          console.log(
+            "Service Worker berhasil:",
+            registration.scope
+          );
+
+        })
+        .catch(function(error) {
+
+          console.error(
+            "Service Worker gagal:",
+            error
+          );
+
+        });
+
+    }
+  );
+
+}
