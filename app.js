@@ -496,4 +496,3 @@ console.log(
   "Firebase Project:",
   firebaseConfig.projectId
 );
-```
